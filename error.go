@@ -1,44 +1,60 @@
 package errors
 
-type Code interface {
-	error
-}
+import (
+	"bytes"
+	"fmt"
+)
 
-type Detail interface {
-	error
-}
+// Kind defines the kind of error
+type Kind string
 
+// Op describes an operation
+type Op string
+
+// Error defines a application error
 type Error struct {
-	Code   Code
-	Detail Detail
-	err    error
-	frame  Frame
+
+	// Kind is the kind of this error
+	Kind Kind `json:"kind"`
+
+	// Human-readable message
+	Message string `json:"message"`
+
+	// Logical operation. usually the name of method.
+	Op Op `json:"op"`
+
+	// Nested error
+	Err error `json:"error"`
+
+	frame Frame
 }
 
 func (e *Error) Error() string {
-	if e.Code == nil {
-		return ""
+	var buf bytes.Buffer
+
+	if e.Kind != "" {
+		fmt.Fprintf(&buf, "%s", e.Kind)
 	}
-	return e.Code.Error()
+
+	if e.Op != "" {
+		if e.Kind != "" {
+			buf.WriteString(": ")
+		}
+		fmt.Fprintf(&buf, "%s", e.Op)
+	}
+
+	return buf.String()
 }
 
 func (e *Error) FormatError(p Printer) error {
-	p.Print(e.Code)
+	p.Print(e.Error())
 	e.frame.Format(p)
-	if p.Detail() && e.Detail != nil {
-		p.Print(e.Detail.Error())
+	if p.Detail() {
+		p.Print(e.Message)
 	}
-	return e.err
+	return e.Unwrap()
 }
 
 func (e *Error) Unwrap() error {
-	return e.err
-}
-
-func (e *Error) Is(err error) bool {
-	return Is(e.Code, err)
-}
-
-func (e *Error) As(target interface{}) bool {
-	return As(e.Detail, target)
+	return e.Err
 }

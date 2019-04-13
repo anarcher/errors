@@ -1,28 +1,32 @@
 package errors
 
-import "testing"
-
-type PathError struct {
-	Path string
-}
-
-func (e *PathError) Error() string {
-	return "path: " + e.Path
-}
+import (
+	"testing"
+)
 
 func TestError(t *testing.T) {
+	const (
+		ENOTFOUND = Kind("notfound")
+		EINVALID  = Kind("invalid")
+	)
 
-	eof := New("EOF")
-	e := E(eof, &PathError{"/home"}, nil)
+	const (
+		op1 Op = "db.delete"
+		op2 Op = "server.delete"
+	)
 
-	if Is(e, eof) != true {
-		t.Errorf("want: %v have: %v", true, Is(e, eof))
+	e := E(op1, ENOTFOUND, "this is error!")
+	e2 := E(op2, e)
+
+	if IsKind(ENOTFOUND, e2) == false {
+		t.Fatalf("want: %v have: %v", true, false)
 	}
 
-	var pathErr *PathError
-	if have := As(e, &pathErr); have == false {
-		t.Errorf("want: %v have: %v", true, have)
-	}
+	t.Logf("%v", e2)
+	t.Logf("%+v", e2)
+	//fmt.Printf("%+v", e2)
 
-	t.Logf("%+v", e)
+	//b, _ := json.Marshal(e2)
+	//fmt.Println(string(b))
+
 }
