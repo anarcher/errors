@@ -11,12 +11,12 @@ func TestError(t *testing.T) {
 	)
 
 	const (
-		op1 Op = "db.delete"
-		op2 Op = "server.delete"
+		DBDelOp     Op = "db.delete"
+		ServerDelOp Op = "server.delete"
 	)
 
-	e := E(op1, ENOTFOUND, "this is error!")
-	e2 := E(op2, e)
+	e := E(DBDelOp, ENOTFOUND, "this is error!")
+	e2 := E(ServerDelOp, e)
 
 	if IsKind(ENOTFOUND, e2) == false {
 		t.Fatalf("want: %v have: %v", true, false)

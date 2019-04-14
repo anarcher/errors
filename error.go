@@ -33,7 +33,7 @@ func (e *Error) Error() string {
 	var buf bytes.Buffer
 
 	if e.Kind != "" {
-		fmt.Fprintf(&buf, "%s", e.Kind)
+		fmt.Fprintf(&buf, "[%s]", e.Kind)
 	}
 
 	if e.Op != "" {
