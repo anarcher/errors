@@ -18,7 +18,7 @@ func TestError(t *testing.T) {
 	e := E(DBDelOp, ENOTFOUND, "this is error!")
 	e2 := E(ServerDelOp, e)
 
-	if IsKind(ENOTFOUND, e2) == false {
+	if IsKind(e2, ENOTFOUND) == false {
 		t.Fatalf("want: %v have: %v", true, false)
 	}
 
