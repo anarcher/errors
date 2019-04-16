@@ -47,12 +47,16 @@ func BestError(err error, args ...interface{}) *Error {
 		e = E(args...).(*Error)
 	}
 
-	if err := ErrorKind(err); err != nil {
-		e.Kind = err.Kind
+	if e.Kind == "" {
+		if err := ErrorKind(err); err != nil {
+			e.Kind = err.Kind
+		}
 	}
 
-	if err := ErrorMessage(err); err != nil {
-		e.Message = err.Message
+	if e.Message == "" {
+		if err := ErrorMessage(err); err != nil {
+			e.Message = err.Message
+		}
 	}
 
 	if e.Op == "" {
