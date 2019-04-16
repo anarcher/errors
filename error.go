@@ -48,10 +48,10 @@ func (e *Error) Error() string {
 
 func (e *Error) FormatError(p Printer) error {
 	p.Print(e.Error())
-	e.frame.Format(p)
 	if p.Detail() {
 		p.Print(e.Message)
 	}
+	e.frame.Format(p)
 	return e.Unwrap()
 }
 
