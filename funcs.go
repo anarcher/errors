@@ -25,7 +25,19 @@ func ErrorMessage(err error) *Error {
 
 }
 
-// BestError returns a new error with latest Kind and Message
+// ErrorOp returnr first errors which has Op in the chain of errors
+func ErrorOp(err error) *Error {
+	e, ok := err.(*Error)
+	if ok && e.Op != "" {
+		return e
+	}
+	if err := Unwrap(err); err != nil {
+		return ErrorOp(err)
+	}
+	return nil
+}
+
+// BestError returns a new error with latest Kind, Op and Message
 // of the chain of error
 func BestError(err error, args ...interface{}) *Error {
 	var e *Error
@@ -41,6 +53,12 @@ func BestError(err error, args ...interface{}) *Error {
 
 	if err := ErrorMessage(err); err != nil {
 		e.Message = err.Message
+	}
+
+	if e.Op == "" {
+		if err := ErrorOp(err); err != nil {
+			e.Op = err.Op
+		}
 	}
 
 	e.Err = err
