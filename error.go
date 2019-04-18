@@ -1,8 +1,8 @@
 package errors
 
 import (
-	"bytes"
 	"fmt"
+	"strings"
 )
 
 // Kind defines the kind of error
@@ -30,20 +30,20 @@ type Error struct {
 }
 
 func (e *Error) Error() string {
-	var buf bytes.Buffer
+	var b strings.Builder
 
 	if e.Kind != "" {
-		fmt.Fprintf(&buf, "[%s]", e.Kind)
+		fmt.Fprintf(&b, "[%s]", e.Kind)
 	}
 
 	if e.Op != "" {
 		if e.Kind != "" {
-			buf.WriteString(": ")
+			b.WriteString(": ")
 		}
-		fmt.Fprintf(&buf, "%s", e.Op)
+		fmt.Fprintf(&b, "%s", e.Op)
 	}
 
-	return buf.String()
+	return b.String()
 }
 
 func (e *Error) FormatError(p Printer) error {
